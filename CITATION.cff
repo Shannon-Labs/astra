@@ -1,0 +1,74 @@
+# CITATION.cff
+# This file provides citation metadata for the ASTRA software
+# It enables automatic citation via GitHub and Zenodo integration
+
+cff-version: 1.2.0
+title: "ASTRA: Autonomous System for Transient Research & Analysis"
+message: "If you use this software, please cite it using these metadata."
+type: software
+
+authors:
+  - given-names: "ASTRA"
+    family-names: "Collaboration"
+    affiliation: "Shannon Labs"
+    email: "astra@shannonlabs.io"
+  
+  - given-names: "Your"
+    family-names: "Name"
+    affiliation: "Your Institution"
+    email: "your.email@institution.edu"
+    orcid: "https://orcid.org/0000-0000-0000-0000"
+
+identifiers:
+  - type: url
+    value: "https://github.com/Shannon-Labs/astra-discoveries"
+    description: "GitHub Repository"
+
+repository-code: "https://github.com/Shannon-Labs/astra-discoveries"
+url: "https://shannonlabs.io/astra"
+
+abstract: >
+  ASTRA is a fully autonomous astronomical transient discovery system that 
+  identifies scientifically interesting supernovae, cataclysmic variables, and 
+  rare stellar phenomena using publicly available data sources without requiring 
+  proprietary API access. The system employs multi-factor anomaly scoring, 
+  cross-matches with Gaia DR3, and generates publication-ready observation plans.
+
+keywords:
+  - astronomy
+  - transients
+  - supernovae
+  - cataclysmic variables
+  - automated discovery
+  - time-domain astronomy
+  - anomaly detection
+
+license: MIT
+
+date-released: 2025-11-06
+
+version: "1.0.0"
+
+references:
+  - type: article
+    title: "ASTRA: Autonomous System for Transient Research & Analysis"
+    authors:
+      - family-names: "Collaboration"
+        given-names: "ASTRA"
+    journal: "SoftwareX (in preparation)"
+    year: 2025
+
+  - type: software
+    title: "astroquery"
+    authors:
+      - family-names: "Ginsburg"
+        given-names: "Adam"
+      - family-names: "Sipőcz"
+        given-names: "Brigitta"
+    url: "https://astroquery.readthedocs.io"
+    
+  - type: software
+    title: "astropy"
+    authors:
+      - family-names: "The Astropy Collaboration"
+    url: "https://www.astropy.org"

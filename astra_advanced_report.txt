@@ -1,0 +1,64 @@
+================================================================================
+ASTRA ADVANCED DISCOVERY REPORT
+Generated: 2025-11-06 20:11:03
+================================================================================
+
+📊 Summary: 4 high-priority anomalies
+
+🎯 HIGH-PRIORITY ANOMALIES (Score ≥ 5.0)
+--------------------------------------------------
+
+1. AT2025abao (Score: 8.0/10.0)
+   Magnitude: 15.1
+   Type: LRN
+   Reasons: Very bright (m=15.1), Rare type: LRN
+
+2. AT2025abne (Score: 5.0/10.0)
+   Magnitude: 15.8
+   Type: unk
+   Reasons: Very bright (m=15.8)
+
+3. AT2025zoe (Score: 5.0/10.0)
+   Magnitude: 15.5
+   Type: unk
+   Reasons: Very bright (m=15.5)
+
+4. AT2025zov (Score: 5.0/10.0)
+   Magnitude: 15.5
+   Type: unk
+   Reasons: Very bright (m=15.5)
+
+🔭 IMMEDIATE FOLLOW-UP REQUIRED
+--------------------------------------------------
+
+1. AT2025abao (🔴 HIGH):
+   Timeline: Within 24 hours
+   Action: Spectroscopic classification
+   Telescope: 2-4m class (e.g., NOT, INT, LCO)
+
+2. AT2025abne (🟡 MEDIUM):
+   Timeline: Within 3 days
+   Action: Spectroscopic classification
+   Telescope: 2-4m class (e.g., NOT, INT, LCO)
+
+3. AT2025zoe (🟡 MEDIUM):
+   Timeline: Within 3 days
+   Action: Spectroscopic classification
+   Telescope: 2-4m class (e.g., NOT, INT, LCO)
+
+4. AT2025zov (🟡 MEDIUM):
+   Timeline: Within 3 days
+   Action: Spectroscopic classification
+   Telescope: 2-4m class (e.g., NOT, INT, LCO)
+
+🎯 SCIENCE OPPORTUNITIES
+--------------------------------------------------
+
+• unk: 3 objects
+• LRN: 1 objects
+
+Key opportunities:
+• Unknown types: Need spectroscopic classification
+• Bright objects: Accessible to small telescopes
+• LRN candidates: Rare stellar merger events
+• Unusual types: Potential new phenomena

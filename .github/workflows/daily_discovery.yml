@@ -1,0 +1,103 @@
+name: Daily ASTRA Discovery
+
+on:
+  schedule:
+    - cron: '0 2 * * *'  # 2 AM UTC daily
+  workflow_dispatch:  # Manual trigger
+
+jobs:
+  discovery:
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        python-version: [3.9, '3.10', 3.11]
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+      
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+    
+    - name: Cache pip dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+    
+    - name: Install system dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential
+    
+    - name: Install Python dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    
+    - name: Run ASTRA Discovery
+      run: |
+        ./scripts/run_advanced.sh
+      env:
+        PYTHONPATH: ${{ github.workspace }}/src
+    
+    - name: Package top discoveries
+      if: success()
+      run: |
+        # Package top 3 discoveries for potential publication
+        python scripts/package_top_discoveries.py astra_advanced_report.txt
+    
+    - name: Upload results as artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: astra-discovery-${{ github.run_id }}
+        path: |
+          advanced_report
+          latest_catalog
+          bright_transients.csv
+          astra_advanced_report.txt
+        retention-days: 30
+    
+    - name: Commit new discoveries
+      if: success()
+      run: |
+        git config --local user.email "astra-bot@shannonlabs.io"
+        git config --local user.name "ASTRA Bot"
+        
+        # Add any new discoveries
+        git add discoveries/ || true
+        
+        # Check if there are changes
+        if git diff-index --quiet HEAD; then
+          echo "No new discoveries to commit"
+        else
+          git commit -m "Daily discovery run - $(date -u +%Y-%m-%d)"
+          git push || echo "Push failed (likely permissions)"
+        fi
+    
+    - name: Notify on failure
+      if: failure()
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const issue = {
+            title: `ASTRA Discovery Failed - ${new Date().toISOString()}`,
+            body: `Daily ASTRA discovery run failed. Check logs at:
+            https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}`,
+            labels: ['bug', 'automation']
+          };
+          
+          try {
+            await github.rest.issues.create({
+              ...issue,
+              owner: context.repo.owner,
+              repo: context.repo.repo
+            });
+          } catch (error) {
+            console.log('Failed to create issue:', error);
+          }
