@@ -6,7 +6,7 @@ from __future__ import annotations
 import argparse
 import sys
 from dataclasses import dataclass
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Dict, Iterable, List, Optional
 
@@ -35,7 +35,7 @@ class RunArtifacts:
 def _prepare_output_dir(output: str, mode: str) -> Path:
     """Determine and create the output directory for this run."""
 
-    timestamp = datetime.now(UTC).strftime("%Y%m%d_%H%M%S")
+    timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
     if output == "auto":
         base = Path.cwd() / DEFAULT_RESULTS_DIR
         base.mkdir(parents=True, exist_ok=True)
