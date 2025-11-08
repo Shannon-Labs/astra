@@ -5,6 +5,27 @@ All notable changes to ASTRA (Autonomous System for Transient Research & Analysi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.2] - 2025-11-08
+
+### Added
+
+- **First-class CLI**: `astra-discover` now runs the Python pipelines directly (no shell scripts required) and supports `--advanced`, `--basic`, `--test`, and `--check` modes.
+- **PyPI-friendly entry point**: `python -m astra_discoveries` mirrors the console script for Windows users and automated environments.
+- **Release-readiness tests**: New offline `pytest` suite with deterministic HTML fixtures validates version metadata, scraping, anomaly scoring, and CLI summaries.
+
+### Changed
+
+- **README** now highlights the v2.0 launch status, PyPI installation path, and the new CLI usage patterns.
+- **Version metadata** unified at `2.0.2` across `setup.py`, `src/__init__.py`, and the CLI.
+
+### Removed
+
+- Retired the brittle `tests/test_infrastructure.py` harness that executed real network calls.
+
+### Verified
+
+- **Live data validation on 2025-11-08**: Successfully processed 17 transients, identified 5 anomalies; top discovery AT2025abao (Luminous Red Nova, score 8.0, magnitude 15.1).
+
 ## [2.0.0] - 2025-11-08
 
 ### Major Changes

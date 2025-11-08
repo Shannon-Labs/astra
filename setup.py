@@ -14,7 +14,7 @@ with open(os.path.join(this_directory, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='astra-discoveries',
-    version='2.0.0',
+    version='2.0.2',
     author='ASTRA Collaboration',
     author_email='astra@shannonlabs.io',
     description='Autonomous System for Transient Research & Analysis',
@@ -61,8 +61,7 @@ setup(
     },
     entry_points={
         'console_scripts': [
-            'astra-discover=scripts.run_discovery:main',
-            'astra=scripts.run_advanced:main',
+            'astra-discover=astra_discoveries:main',
         ],
     },
     include_package_data=True,

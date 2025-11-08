@@ -19,7 +19,7 @@ Usage:
 >>> print(f"Found {len(results['anomalies'])} anomalies")
 """
 
-__version__ = "1.0.0"
+__version__ = "2.0.2"
 __author__ = "ASTRA Collaboration"
 __email__ = "astra@shannonlabs.io"
 

@@ -45,54 +45,95 @@ ASTRA uses **publicly available data** from:
 
 ---
 
+## 🏆 Release Status (v2.0)
+
+- ✅ **GitHub Release**: [v2.0.0](https://github.com/Shannon-Labs/astra/releases/tag/v2.0.0)
+- ✅ **PyPI Package**: [astra-discoveries 2.0.2](https://pypi.org/project/astra-discoveries/2.0.2/)
+- ✅ **Documentation Suite**: [Guides & reports](./docs) including architecture, quick start, and publication templates
+- ✅ **CI/CD Pipeline**: Multi-platform GitHub Actions covering tests, lint, and security scans
+- ✅ **Cross-Platform CLI**: `astra-discover` command ships with the PyPI build—no shell scripts required
+
+**Package URLs**
+
+- GitHub: https://github.com/Shannon-Labs/astra
+- PyPI: https://pypi.org/project/astra-discoveries/
+- Release: https://github.com/Shannon-Labs/astra/releases/tag/v2.0.0
+
+**Share the launch**
+
+```
+🌟 Just launched ASTRA v2.0.0 — a free, autonomous astronomical transient discovery system!
+
+pip install astra-discoveries
+astra-discover --advanced
+
+#Astronomy #OpenScience #Python #Astrophysics #CitizenScience
+```
+
+---
+
 ## 🚀 Quick Start
 
-### Installation (5 minutes)
+### Option A: Install from PyPI (5 minutes)
 
 ```bash
-# Clone the repository
+python -m pip install --upgrade pip
+pip install astra-discoveries
+
+# Verify the environment (no network calls)
+astra-discover --test
+
+# Optional dependency check for CI logs
+astra-discover --check
+
+# Run the advanced discovery pipeline
+astra-discover --advanced
+
+# Review artifacts
+cat latest_discovery/summary.txt
+cat latest_discovery/astra_advanced_report.txt
+```
+
+### Option B: Work from source
+
+```bash
 git clone https://github.com/Shannon-Labs/astra.git
 cd astra
 
-# Create virtual environment
 python3 -m venv astra_env
-source astra_env/bin/activate  # On Windows: astra_env\Scripts\activate
+source astra_env/bin/activate  # Windows: astra_env\Scripts\activate
 
-# Install dependencies
 pip install -r requirements.txt
+pip install -e .[dev]
 
-# Verify installation
-python tests/test_infrastructure.py
-# Should see: 🎉 ASTRA IS READY FOR DISCOVERY OPS
+# Deterministic, offline-friendly tests
+pytest -q
+
+# Run the CLI in editable mode
+python -m astra_discoveries --advanced --output discoveries/dev_run
 ```
 
-### Your First Discovery (30 seconds)
+### Health Checks & Outputs
 
-```bash
-# Run the discovery pipeline (cross-platform)
-astra --advanced
+- `astra-discover --test` — quick self-test without scraping the web
+- `astra-discover --check` — dependency report (ideal for CI logs)
+- `astra-discover --advanced` — full anomaly hunt with artifacts in `discoveries/<timestamp>/`
+- `astra-discover --basic` — faster legacy pipeline when you just need a sanity check
 
-# Or use the traditional shell script
-./scripts/run_advanced.sh
+**Expected discovery output:**
 
-# View results
-cat advanced_report
-
-# Check detailed summary
-cat latest_discovery/summary.txt
 ```
+🚀 ASTRA Discovery System
+========================
+Mode: Advanced
 
-**Expected Output:**
-```
-🚀 ASTRA Advanced Discovery System
-=====================================
-✅ Found 35 bright transients
-✅ Found 4 high-priority anomalies
+📊 Discovery Summary
+--------------------
+Transients analyzed: 35
+High-priority anomalies: 4
 
-🎯 TOP DISCOVERY: AT2025abao (Score: 8.0)
-   Type: LRN (Luminous Red Nova)
-   Magnitude: 15.1
-   Action: Immediate spectroscopy
+1. AT2025abao (Score: 8.0, m=15.1, Type: LRN)
+   Reasons: Exceptionally bright (m=15.1), Rare type: LRN
 ```
 
 ---
