@@ -47,7 +47,7 @@ jobs:
   publish-pypi:
     needs: test-and-build
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') && vars.PYPI_PUBLISH == 'true'
     permissions:
       id-token: write
 
@@ -86,7 +86,7 @@ jobs:
 
     - name: Run discovery pipeline for release demo
       run: |
-        python -m astra_discoveries --advanced --output demo_run
+        python -m astra_discoveries --test
 
     - name: Generate release notes
       id: release_notes
@@ -170,15 +170,9 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Upload demo results
-      uses: softprops/action-gh-release@v1
-      with:
-        files: ./demo_run/summary.txt
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   notify:
-    needs: [publish-pypi, create-release]
+    needs: create-release
     runs-on: ubuntu-latest
     if: success()
 
