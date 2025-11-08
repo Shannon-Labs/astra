@@ -23,18 +23,24 @@ __version__ = "2.0.2"
 __author__ = "ASTRA Collaboration"
 __email__ = "astra@shannonlabs.io"
 
-from .transient_scraper import TransientScraper, get_recent_transients
 from .astra_discovery_engine import AstraDiscoveryEngine
 from .enhanced_discovery_v2 import EnhancedDiscoveryEngineV2
+from .transient_scraper import TransientScraper, get_recent_transients
 
-__all__ = ['TransientScraper', 'AstraDiscoveryEngine', 'EnhancedDiscoveryEngineV2', 
-           'get_recent_transients', 'run_basic_discovery', 'run_advanced_discovery']
+__all__ = [
+    "TransientScraper",
+    "AstraDiscoveryEngine",
+    "EnhancedDiscoveryEngineV2",
+    "get_recent_transients",
+    "run_basic_discovery",
+    "run_advanced_discovery",
+]
 
 
 def run_basic_discovery():
     """
     Run a basic ASTRA discovery cycle.
-    
+
     Returns
     -------
     results : dict
@@ -47,7 +53,7 @@ def run_basic_discovery():
 def run_advanced_discovery():
     """
     Run an advanced ASTRA discovery cycle with enhanced scoring.
-    
+
     Returns
     -------
     results : dict
@@ -60,10 +66,11 @@ def run_advanced_discovery():
 def system_check():
     """Verify ASTRA infrastructure is ready."""
     try:
-        import astroquery
         import astropy
+        import astroquery
         import numpy
         import pandas
+
         print("✅ ASTRA IS READY FOR DISCOVERY OPS")
         print(f"   astroquery {astroquery.__version__}")
         print(f"   astropy {astropy.__version__}")

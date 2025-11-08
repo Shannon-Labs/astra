@@ -5,7 +5,7 @@ Creates a complete, publication-ready discovery package from ASTRA output.
 
 Usage:
     python scripts/package_discovery.py --object AT2025abao --score 8.0 --mag 15.1 --type LRN
-    
+
 This creates:
     discoveries/2025-11-06_AT2025abao/
     ├── index.md                 # Main discovery report
@@ -15,14 +15,14 @@ This creates:
 """
 
 import argparse
-import os
 import datetime
+import os
 import shutil
 import sys
 from pathlib import Path
 
 # Add src to path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
 # Template for discovery report
 DISCOVERY_TEMPLATE = """---
@@ -128,17 +128,18 @@ Use classification "{obj_type}" depending on spectroscopy.
 ---
 """
 
+
 def create_discovery_package(object_id, score, mag=None, obj_type=None, ra=None, dec=None):
     """Create a complete discovery package."""
-    
+
     # Get current date
     date = datetime.datetime.utcnow().strftime("%Y-%m-%d")
     timestamp = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC")
-    
+
     # Create discovery directory
     discovery_dir = Path(f"discoveries/{date}_{object_id}")
     discovery_dir.mkdir(parents=True, exist_ok=True)
-    
+
     # Determine priority
     score_float = float(score)
     if score_float >= 7.0:
@@ -153,7 +154,7 @@ def create_discovery_package(object_id, score, mag=None, obj_type=None, ra=None,
         priority = "LOW"
         priority_text = "🟢 LOW PRIORITY"
         action_required = "Monitor and follow up as needed"
-    
+
     # Generate scientific significance text
     if obj_type and "LRN" in obj_type:
         significance = """Luminous Red Novae (LRNe) are extremely rare stellar mergers (fewer than 20 known). Key characteristics:
@@ -184,7 +185,7 @@ Follow-up will determine if this is a standard or peculiar event."""
 - **Classification potential**: Spectroscopy will reveal nature
 
 This could be a rare type of supernova, an unusual CV outburst, or a new phenomenon entirely."""
-    
+
     # Fill in template
     content = DISCOVERY_TEMPLATE.format(
         object_id=object_id,
@@ -199,23 +200,23 @@ This could be a rare type of supernova, an unusual CV outburst, or a new phenome
         dec=dec if dec else "[To be measured]",
         score=score,
         timestamp=timestamp,
-        significance=significance
+        significance=significance,
     )
-    
+
     # Write discovery report
     index_path = discovery_dir / "index.md"
-    with open(index_path, 'w') as f:
+    with open(index_path, "w") as f:
         f.write(content)
-    
+
     # Create data stub
     data_path = discovery_dir / "data.csv"
-    with open(data_path, 'w') as f:
+    with open(data_path, "w") as f:
         f.write("date,magnitude,source,notes\n")
         f.write(f"{date},{mag or 'Unknown'},ASTRA,Discovery\n")
-    
+
     # Create observation plan stub
     plan_path = discovery_dir / "observation_plan.md"
-    with open(plan_path, 'w') as f:
+    with open(plan_path, "w") as f:
         f.write(f"# Observation Plan for {object_id}\n\n")
         f.write(f"**Priority**: {priority_text}\n")
         f.write(f"**Magnitude**: {mag or 'Unknown'}\n")
@@ -233,10 +234,10 @@ This could be a rare type of supernova, an unusual CV outburst, or a new phenome
         f.write("- **First Spectrum**: Within 24-48 hours\n")
         f.write("- **Classification**: Within 1 week\n")
         f.write("- **Monitoring**: Daily for 2 weeks\n")
-    
+
     # Create discovery log
     log_path = discovery_dir / "discovery.log"
-    with open(log_path, 'w') as f:
+    with open(log_path, "w") as f:
         f.write(f"ASTRA Discovery Log for {object_id}\n")
         f.write(f"Generated: {timestamp}\n")
         f.write(f"Score: {score}/10\n")
@@ -244,10 +245,10 @@ This could be a rare type of supernova, an unusual CV outburst, or a new phenome
         f.write(f"Type: {obj_type}\n")
         f.write("\nSystem: ASTRA Advanced v1.0.0\n")
         f.write("Status: Discovery packaged successfully\n")
-    
+
     # Create README for the discovery directory
     readme_path = discovery_dir / "README.md"
-    with open(readme_path, 'w') as f:
+    with open(readme_path, "w") as f:
         f.write(f"# Discovery Package: {object_id}\n\n")
         f.write(f"**Date**: {date}\n")
         f.write(f"**Score**: {score}/10\n")
@@ -263,15 +264,16 @@ This could be a rare type of supernova, an unusual CV outburst, or a new phenome
         f.write("1. Review `index.md` for full details\n")
         f.write("2. Use `observation_plan.md` for telescope proposals\n")
         f.write("3. Submit `index.md` to TNS/ATel after follow-up\n")
-    
+
     print(f"✅ Packaged discovery at {discovery_dir}")
     print(f"📂 Ready for git add/commit")
     print()
     print("Files created:")
     for file in discovery_dir.iterdir():
         print(f"  • {file.name}")
-    
+
     return str(discovery_dir)
+
 
 def main():
     """Command line interface."""
@@ -288,21 +290,18 @@ Examples:
   
   # Package with coordinates
   python scripts/package_discovery.py --object AT2025test --score 7.0 --mag 16.0 --type CV --ra "21:42:15.42" --dec "+53:17:43.1"
-        """
+        """,
     )
-    
-    parser.add_argument("--object", required=True,
-                        help="Object ID (e.g., AT2025abao)")
-    parser.add_argument("--score", required=True, type=float,
-                        help="ASTRA anomaly score (0-10)")
-    parser.add_argument("--mag", type=float,
-                        help="Discovery magnitude")
+
+    parser.add_argument("--object", required=True, help="Object ID (e.g., AT2025abao)")
+    parser.add_argument("--score", required=True, type=float, help="ASTRA anomaly score (0-10)")
+    parser.add_argument("--mag", type=float, help="Discovery magnitude")
     parser.add_argument("--type", help="Object type (e.g., LRN, CV, unknown)")
     parser.add_argument("--ra", help="Right Ascension (optional)")
     parser.add_argument("--dec", help="Declination (optional)")
-    
+
     args = parser.parse_args()
-    
+
     # Create the discovery package
     create_discovery_package(
         object_id=args.object,
@@ -310,8 +309,9 @@ Examples:
         mag=args.mag,
         obj_type=args.type,
         ra=args.ra,
-        dec=args.dec
+        dec=args.dec,
     )
+
 
 if __name__ == "__main__":
     main()
