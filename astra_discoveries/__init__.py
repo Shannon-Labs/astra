@@ -56,7 +56,7 @@ def _render_summary(results: dict, mode: str) -> str:
     lines: List[str] = []
     lines.append(f"ASTRA {mode.title()} Discovery Summary")
     lines.append("=" * 60)
-    lines.append(f"Generated: {datetime.now(UTC).strftime('%Y-%m-%d %H:%M:%S UTC')}")
+    lines.append(f"Generated: {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC')}")
     if transients is not None:
         lines.append(f"Transients analyzed: {len(transients)}")
     lines.append(f"High-priority anomalies: {len(anomalies)}")
