@@ -69,7 +69,10 @@ python tests/test_infrastructure.py
 ### Your First Discovery (30 seconds)
 
 ```bash
-# Run the discovery pipeline
+# Run the discovery pipeline (cross-platform)
+astra --advanced
+
+# Or use the traditional shell script
 ./scripts/run_advanced.sh
 
 # View results
@@ -165,33 +168,40 @@ astra/
 │   └── enhanced_discovery_v2.py      # Advanced scoring
 │
 ├── scripts/                          # User-facing scripts
-│   ├── run_advanced.sh              # Run discovery
-│   └── package_discovery.py         # Package discoveries
+│   ├── run_advanced.sh              # Shell script (Linux/macOS)
+│   ├── run_discovery.py             # Python entry point (cross-platform)
+│   └── package_top_discoveries.py   # Package discoveries
 │
 ├── tests/                            # Test suite
 │   └── test_infrastructure.py       # Validation tests
 │
 ├── docs/                             # Documentation
-│   ├── ARCHITECTURE.md
-│   ├── SCIENTIFIC_METHOD.md
-│   └── PUBLICATION_GUIDE.md
+│   ├── ARCHITECTURE.md              # System design and components
+│   ├── SCIENTIFIC_METHOD.md         # Discovery methodology
+│   ├── QUICKSTART.md                # Detailed setup guide
+│   └── PUBLICATION_GUIDE.md         # How to publish discoveries
 │
 ├── discoveries/                      # Packaged discoveries
 │   └── TEMPLATE/                    # Template for new
 │
-└── .github/
-    └── workflows/
-        └── daily_discovery.yml      # Automated runs
+├── .github/                          # GitHub workflows
+│   └── workflows/
+│       ├── CI.yml                   # Continuous integration
+│       ├── discovery.yml            # Automated discovery runs
+│       └── release.yml              # Release management
+
+├── .gitignore                        # Git ignore rules
+├── CHANGELOG.md                      # Version history
+└── CITATION.cff                      # Academic citation metadata
 ```
 
 ---
 
 ## 📚 Documentation
 
-- **[Installation Guide](./INSTALL.md)** - Detailed setup instructions
 - **[Quick Start Guide](./docs/QUICKSTART.md)** - Get running in 5 minutes
 - **[Scientific Methodology](./docs/SCIENTIFIC_METHOD.md)** - How scoring works
-- **[Architecture Overview](./docs/ARCHITECTURE.md)** - System design
+- **[Architecture Overview](./docs/ARCHITECTURE.md)** - System design and components
 - **[Publication Guide](./docs/PUBLICATION_GUIDE.md)** - How to publish discoveries
 
 ---
@@ -244,11 +254,12 @@ ASTRA democratizes transient discovery by providing autonomous, API-free tools t
 
 ## 📊 Current Status
 
-- **Version**: 1.0.0
+- **Version**: 2.0.0
 - **Status**: 🟢 Production Ready
-- **Last Run**: 2025-11-06
-- **Discoveries**: 3 high-priority anomalies identified
-- **Tests**: 5/5 passing
+- **Last Run**: {{ current date }}
+- **Discoveries**: {{ your latest discoveries }}
+- **Tests**: All passing
+- **CI/CD**: Automated testing and deployment
 
 ---
 

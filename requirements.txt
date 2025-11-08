@@ -15,7 +15,7 @@ beautifulsoup4>=4.9.0
 lxml>=4.6.0
 
 # Optional: for advanced features
-# scikit-learn>=1.0.0  # For ML-based anomaly detection (future)
+scikit-learn>=1.0.0  # For ML-based anomaly detection (v2.0)
 # astropy-healpix>=0.6  # For sky map operations (future)
 
 # Development dependencies (for testing)

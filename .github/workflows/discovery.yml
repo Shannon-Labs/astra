@@ -1,0 +1,160 @@
+name: Automated Discovery Pipeline
+
+on:
+  schedule:
+    # Run discovery pipeline twice daily at 00:00 and 12:00 UTC
+    - cron: '0 0,12 * * *'
+  workflow_dispatch:  # Allow manual triggering
+    inputs:
+      debug_mode:
+        description: 'Run in debug mode'
+        required: false
+        default: 'false'
+        type: boolean
+      test_run:
+        description: 'Test run only (no publishing)'
+        required: false
+        default: 'true'
+        type: boolean
+
+jobs:
+  discovery:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.10"
+
+    - name: Cache pip dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Run infrastructure test
+      run: |
+        python tests/test_infrastructure.py
+
+    - name: Run discovery pipeline
+      id: discovery
+      run: |
+        # Set environment variables
+        export ASTRA_DEBUG=${{ github.event.inputs.debug_mode || 'false' }}
+        export ASTRA_TEST_RUN=${{ github.event.inputs.test_run || 'true' }}
+        export ASTRA_TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+
+        # Run the discovery pipeline
+        ./scripts/run_advanced.sh
+
+        # Check if we found high-priority discoveries
+        if [ -f "advanced_report" ]; then
+          HIGH_PRIORITY=$(grep -c "Score.*[7-9]\." advanced_report || echo "0")
+          echo "high_priority_count=$HIGH_PRIORITY" >> $GITHUB_OUTPUT
+          echo "Found $HIGH_PRIORITY high-priority discoveries"
+        else
+          echo "high_priority_count=0" >> $GITHUB_OUTPUT
+        fi
+
+        # Create discovery summary
+        {
+          echo "# ASTRA Discovery Report - $(date)"
+          echo ""
+          echo "## Pipeline Summary"
+          echo "- Run time: $(date)"
+          echo "- Test mode: $ASTRA_TEST_RUN"
+          echo "- Debug mode: $ASTRA_DEBUG"
+          echo ""
+          echo "## High Priority Discoveries"
+          echo "Count: $HIGH_PRIORITY"
+          echo ""
+          if [ -f "advanced_report" ] && [ "$HIGH_PRIORITY" -gt 0 ]; then
+            echo "### Top Discoveries:"
+            awk '/HIGH-PRIORITY ANOMALIES/,/IMMEDIATE FOLLOW-UP/' advanced_report | \
+              grep -E "^[0-9]+\." | head -5
+            echo ""
+          fi
+        } > discovery_summary.md
+
+    - name: Save results
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: discovery-results-${{ github.run_number }}
+        path: |
+          latest_discovery/
+          advanced_report
+          latest_catalog
+          discovery_summary.md
+        retention-days: 30
+
+    - name: Create issue for high-priority discoveries
+      if: steps.discovery.outputs.high_priority_count > 0 && github.event.inputs.test_run != 'true'
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const fs = require('fs');
+          const summary = fs.readFileSync('discovery_summary.md', 'utf8');
+
+          github.rest.issues.create({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            title: `🌟 High Priority Discovery Alert - ${new Date().toISOString().split('T')[0]}`,
+            body: summary,
+            labels: ['discovery', 'high-priority', 'automated']
+          });
+
+    - name: Update website (if configured)
+      if: github.event.inputs.test_run != 'true'
+      run: |
+        # This step would update a discovery website
+        # Implementation depends on your hosting setup
+        echo "Website update step - implement as needed"
+
+  publish:
+    needs: discovery
+    runs-on: ubuntu-latest
+    if: github.event.inputs.test_run != 'true' && github.ref == 'refs/heads/main'
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Download results
+      uses: actions/download-artifact@v3
+      with:
+        name: discovery-results-${{ github.run_number }}
+        path: results/
+
+    - name: Prepare data package
+      run: |
+        mkdir -p published_data/$(date +%Y-%m-%d)
+        cp -r results/* published_data/$(date +%Y-%m-%d)/
+
+        # Create metadata
+        {
+          echo "{"
+          echo "  \"date\": \"$(date -Iseconds)\","
+          echo "  \"run_id\": \"${{ github.run_id }}\","
+          echo "  \"total_transients\": \"$(wc -l < results/latest_catalog 2>/dev/null || echo 0)\","
+          echo "  \"high_priority\": \"$(grep -c 'Score.*[7-9].' results/advanced_report 2>/dev/null || echo 0)\""
+          echo "}"
+        } > published_data/$(date +%Y-%m-%d)/metadata.json
+
+    - name: Commit published data
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add published_data/
+        git diff --staged --quiet || git commit -m "Add discovery data for $(date +%Y-%m-%d)"
+        git push

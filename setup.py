@@ -14,13 +14,18 @@ with open(os.path.join(this_directory, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='astra-discoveries',
-    version='1.0.0',
+    version='2.0.0',
     author='ASTRA Collaboration',
     author_email='astra@shannonlabs.io',
     description='Autonomous System for Transient Research & Analysis',
     long_description=long_description,
     long_description_content_type='text/markdown',
     url='https://github.com/Shannon-Labs/astra',
+    project_urls={
+        'Documentation': 'https://github.com/Shannon-Labs/astra/docs',
+        'Source': 'https://github.com/Shannon-Labs/astra',
+        'Tracker': 'https://github.com/Shannon-Labs/astra/issues',
+    },
     packages=find_packages(),
     classifiers=[
         'Development Status :: 5 - Production/Stable',
@@ -56,7 +61,8 @@ setup(
     },
     entry_points={
         'console_scripts': [
-            'astra-discover=scripts.run_advanced:main',
+            'astra-discover=scripts.run_discovery:main',
+            'astra=scripts.run_advanced:main',
         ],
     },
     include_package_data=True,

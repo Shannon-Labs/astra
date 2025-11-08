@@ -1,0 +1,216 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  test-and-build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.10"
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install build twine
+
+    - name: Run tests
+      run: |
+        python tests/test_infrastructure.py
+        python -m pytest tests/ -v
+
+    - name: Build package
+      run: |
+        python -m build
+
+    - name: Check package
+      run: |
+        twine check dist/*
+
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: dist
+        path: dist/
+
+  publish-pypi:
+    needs: test-and-build
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
+
+    steps:
+    - name: Download build artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: dist
+        path: dist/
+
+    - name: Publish to PyPI
+      if: github.repository == 'Shannon-Labs/astra'
+      uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        user: __token__
+        password: ${{ secrets.PYPI_API_TOKEN }}
+
+  create-release:
+    needs: test-and-build
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.10"
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Run discovery pipeline for release demo
+      run: |
+        ./scripts/run_advanced.sh
+
+    - name: Generate release notes
+      id: release_notes
+      run: |
+        # Get version from tag
+        VERSION=${GITHUB_REF#refs/tags/v}
+
+        # Get previous version
+        PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+
+        # Generate changelog
+        if [ -n "$PREV_TAG" ]; then
+          CHANGELOG=$(git log --pretty=format:"- %s" $PREV_TAG..HEAD)
+        else
+          CHANGELOG="- Initial release of ASTRA v$VERSION"
+        fi
+
+        # Create release notes
+        cat > release_notes.md << EOF
+        # ASTRA v$VERSION Release
+
+        ## What's New
+
+        $CHANGELOG
+
+        ## Quick Start
+
+        \`\`\`bash
+        git clone https://github.com/Shannon-Labs/astra.git
+        cd astra
+        python3 -m venv astra_env
+        source astra_env/bin/activate
+        pip install -r requirements.txt
+        ./scripts/run_advanced.sh
+        \`\`\`
+
+        ## Example Output
+
+        \`\`\`
+        🚀 ASTRA Advanced Discovery System
+        =====================================
+        ✓ Found 35 bright transients
+        ✓ Found 4 high-priority anomalies
+
+        🎯 TOP DISCOVERY: AT2025abao (Score: 8.0)
+           Type: LRN (Luminous Red Nova)
+           Magnitude: 15.1
+           Action: Immediate spectroscopy
+        \`\`\`
+
+        ## Installation
+
+        \`pip install astra-discoveries\`
+
+        ## Documentation
+
+        - [Quick Start Guide](docs/QUICKSTART.md)
+        - [Architecture](docs/ARCHITECTURE.md)
+        - [Scientific Method](docs/SCIENTIFIC_METHOD.md)
+        - [Publication Guide](docs/PUBLICATION_GUIDE.md)
+
+        ## Requirements
+
+        - Python 3.8+
+        - ~500MB disk space
+        - Internet connection for data scraping
+
+        EOF
+
+        echo "release_notes_file=release_notes.md" >> $GITHUB_OUTPUT
+        echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+    - name: Create GitHub Release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ steps.release_notes.outputs.version }}
+        release_name: ASTRA v${{ steps.release_notes.outputs.version }}
+        body_path: ${{ steps.release_notes.outputs.release_notes_file }}
+        draft: false
+        prerelease: false
+
+    - name: Upload demo results
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./latest_discovery/summary.txt
+        asset_name: demo_results.txt
+        asset_content_type: text/plain
+
+  notify:
+    needs: [publish-pypi, create-release]
+    runs-on: ubuntu-latest
+    if: success()
+
+    steps:
+    - name: Create announcement issue
+      uses: actions/github-script@v6
+      with:
+        script: |
+          github.rest.issues.create({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            title: `🎉 ASTRA ${{ github.ref_name }} Released!`,
+            body: `## ASTRA ${{ github.ref_name }} is now available!
+
+            ### Install
+            \`\`\`bash
+            pip install astra-discoveries==${{ github.ref_name }}
+            \`\`\`
+
+            ### What's new
+            See the [release notes](https://github.com/${{ github.repository }}/releases/tag/${{ github.ref_name }}) for details.
+
+            ### Quick demo
+            \`\`\`bash
+            git clone https://github.com/Shannon-Labs/astra.git
+            cd astra
+            ./scripts/run_advanced.sh
+            \`\`\`
+
+            Share your discoveries with #ASTRAdiscoveries!
+
+            ---
+            This is an automated announcement for release ${{ github.ref_name }}.`,
+            labels: ['release', 'announcement']
+          });

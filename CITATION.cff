@@ -1,6 +1,6 @@
 # CITATION.cff
-# This file provides citation metadata for the ASTRA software
-# It enables automatic citation via GitHub and Zenodo integration
+# Citation metadata for the ASTRA software
+# Enables automatic citation via GitHub and Zenodo integration
 
 cff-version: 1.2.0
 title: "ASTRA: Autonomous System for Transient Research & Analysis"
@@ -12,42 +12,46 @@ authors:
     family-names: "Collaboration"
     affiliation: "Shannon Labs"
     email: "astra@shannonlabs.io"
-  
-  - given-names: "Your"
-    family-names: "Name"
-    affiliation: "Your Institution"
-    email: "your.email@institution.edu"
-    orcid: "https://orcid.org/0000-0000-0000-0000"
+
+  - given-names: "Open Source"
+    family-names: "Contributors"
+    affiliation: "Community"
 
 identifiers:
   - type: url
-    value: "https://github.com/Shannon-Labs/astra-discoveries"
+    value: "https://github.com/Shannon-Labs/astra"
     description: "GitHub Repository"
 
-repository-code: "https://github.com/Shannon-Labs/astra-discoveries"
-url: "https://shannonlabs.io/astra"
+repository-code: "https://github.com/Shannon-Labs/astra"
+url: "https://github.com/Shannon-Labs/astra"
 
 abstract: >
-  ASTRA is a fully autonomous astronomical transient discovery system that 
-  identifies scientifically interesting supernovae, cataclysmic variables, and 
-  rare stellar phenomena using publicly available data sources without requiring 
-  proprietary API access. The system employs multi-factor anomaly scoring, 
-  cross-matches with Gaia DR3, and generates publication-ready observation plans.
+  ASTRA is a fully autonomous astronomical transient discovery system that
+  identifies scientifically interesting supernovae, cataclysmic variables, and
+  rare stellar phenomena using publicly available data sources without requiring
+  proprietary API access. The system employs multi-factor anomaly scoring,
+  cross-matches with astronomical catalogs, and generates publication-ready
+  observation plans for follow-up studies.
 
 keywords:
   - astronomy
+  - astrophysics
   - transients
   - supernovae
   - cataclysmic variables
+  - luminous red novae
   - automated discovery
   - time-domain astronomy
   - anomaly detection
+  - open science
+  - API-free research
 
 license: MIT
+license-url: "https://opensource.org/licenses/MIT"
 
-date-released: 2025-11-06
+date-released: 2025-11-08
 
-version: "1.0.0"
+version: "2.0.0"
 
 references:
   - type: article
