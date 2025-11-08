@@ -25,8 +25,7 @@ jobs:
 
     - name: Run tests
       run: |
-        python tests/test_infrastructure.py
-        python -m pytest tests/ -v
+        pytest -q
 
     - name: Build package
       run: |
@@ -57,9 +56,6 @@ jobs:
     - name: Publish to PyPI
       if: github.repository == 'Shannon-Labs/astra'
       uses: pypa/gh-action-pypi-publish@release/v1
-      with:
-        user: __token__
-        password: ${{ secrets.PYPI_API_TOKEN }}
 
   create-release:
     needs: test-and-build
@@ -83,7 +79,7 @@ jobs:
 
     - name: Run discovery pipeline for release demo
       run: |
-        ./scripts/run_advanced.sh
+        python -m astra_discoveries --advanced --output demo_run
 
     - name: Generate release notes
       id: release_notes
@@ -116,8 +112,8 @@ jobs:
         cd astra
         python3 -m venv astra_env
         source astra_env/bin/activate
-        pip install -r requirements.txt
-        ./scripts/run_advanced.sh
+        pip install astra-discoveries
+        astra-discover --advanced
         \`\`\`
 
         ## Example Output
@@ -203,9 +199,8 @@ jobs:
 
             ### Quick demo
             \`\`\`bash
-            git clone https://github.com/Shannon-Labs/astra.git
-            cd astra
-            ./scripts/run_advanced.sh
+            pip install astra-discoveries
+            astra-discover --advanced
             \`\`\`
 
             Share your discoveries with #ASTRAdiscoveries!
