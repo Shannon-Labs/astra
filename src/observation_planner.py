@@ -63,16 +63,12 @@ class ObservationPlanner:
         """Parse RA/Dec strings to degrees"""
         # Parse RA
         ra_parts = ra_str.replace("h", " ").replace("m", " ").replace("s", "").split()
-        ra_hours = (
-            float(ra_parts[0]) + float(ra_parts[1]) / 60 + float(ra_parts[2]) / 3600
-        )
+        ra_hours = float(ra_parts[0]) + float(ra_parts[1]) / 60 + float(ra_parts[2]) / 3600
         ra_deg = ra_hours * 15  # Convert hours to degrees
 
         # Parse Dec
         dec_parts = dec_str.replace("d", " ").replace("m", " ").replace("s", "").split()
-        dec_deg = (
-            float(dec_parts[0]) + float(dec_parts[1]) / 60 + float(dec_parts[2]) / 3600
-        )
+        dec_deg = float(dec_parts[0]) + float(dec_parts[1]) / 60 + float(dec_parts[2]) / 3600
         if dec_str.startswith("-"):
             dec_deg = -dec_deg
 
@@ -110,9 +106,7 @@ class ObservationPlanner:
             plan.append("Visibility: Best from Southern hemisphere")
 
         plan.append(f"Optimal airmass: {airmass_info['airmass']:.2f}")
-        plan.append(
-            f"Airmass status: {'EXCELLENT' if airmass_info['optimal'] else 'ACCEPTABLE'}"
-        )
+        plan.append(f"Airmass status: {'EXCELLENT' if airmass_info['optimal'] else 'ACCEPTABLE'}")
         plan.append("")
 
         # Recommended observations

@@ -83,9 +83,7 @@ class ClassificationEngine:
 
         # Method 2: Host galaxy analysis (if coordinates available)
         if "ra" in transient_data and "dec" in transient_data:
-            host_analysis = self._analyze_host_galaxy(
-                transient_data["ra"], transient_data["dec"]
-            )
+            host_analysis = self._analyze_host_galaxy(transient_data["ra"], transient_data["dec"])
             if host_analysis["confidence"] > 0:
                 results["methods_applied"].append("host_galaxy")
                 results["evidence"].extend(host_analysis["evidence"])
@@ -129,16 +127,12 @@ class ClassificationEngine:
 
             # Basic photometric classification rules
             if mag < 12:
-                result["evidence"].append(
-                    f"Very bright (m={mag:.1f}) - likely Galactic"
-                )
+                result["evidence"].append(f"Very bright (m={mag:.1f}) - likely Galactic")
 
                 if mag < 10:
                     result["type"] = "nova_or_cv"
                     result["confidence"] = 0.6
-                    result["evidence"].append(
-                        "Extremely bright suggests nova or bright CV"
-                    )
+                    result["evidence"].append("Extremely bright suggests nova or bright CV")
 
             elif mag < 16:
                 result["evidence"].append(f"Bright (m={mag:.1f}) - could be SN or LRN")
@@ -155,16 +149,12 @@ class ClassificationEngine:
                     result["evidence"].append(f"SN type hint: {obj_type}")
 
             elif mag < 20:
-                result["evidence"].append(
-                    f"Moderate brightness (m={mag:.1f}) - typical SN"
-                )
+                result["evidence"].append(f"Moderate brightness (m={mag:.1f}) - typical SN")
                 result["type"] = "supernova"
                 result["confidence"] = 0.5
 
             else:
-                result["evidence"].append(
-                    f"Faint (m={mag:.1f}) - distant SN or variable"
-                )
+                result["evidence"].append(f"Faint (m={mag:.1f}) - distant SN or variable")
                 result["confidence"] = 0.3
 
         except Exception as e:
@@ -214,16 +204,12 @@ class ClassificationEngine:
                     obj_type = nearest.get("Type", "Unknown")
                     distance = nearest.get("Distance", 999)
 
-                    result["evidence"].append(
-                        f"NED object within 30 arcsec: {obj_type}"
-                    )
+                    result["evidence"].append(f"NED object within 30 arcsec: {obj_type}")
 
                     if "Galaxy" in obj_type or "G" in obj_type:
                         result["type"] = "extragalactic"
                         result["confidence"] = 0.7
-                        result["evidence"].append(
-                            f"Host galaxy detected (type: {obj_type})"
-                        )
+                        result["evidence"].append(f"Host galaxy detected (type: {obj_type})")
                         result["evidence"].append(
                             "Strong evidence for extragalactic transient (SN, LRN, etc.)"
                         )
@@ -231,14 +217,10 @@ class ClassificationEngine:
                     elif "Star" in obj_type:
                         result["type"] = "galactic"
                         result["confidence"] = 0.6
-                        result["evidence"].append(
-                            "Stellar object - likely Galactic variable"
-                        )
+                        result["evidence"].append("Stellar object - likely Galactic variable")
 
                     else:
-                        result["evidence"].append(
-                            f"Unclassified NED object: {obj_type}"
-                        )
+                        result["evidence"].append(f"Unclassified NED object: {obj_type}")
                 else:
                     result["evidence"].append("No NED objects within 30 arcsec")
                     result["confidence"] = 0.4
@@ -278,9 +260,7 @@ class ClassificationEngine:
                     result["type"] = "known_variable"
                     result["confidence"] = 0.8
                     result["evidence"].append("Match in VSX variable star catalog")
-                    result["evidence"].append(
-                        "This is a known variable star, not a new transient"
-                    )
+                    result["evidence"].append("This is a known variable star, not a new transient")
                 else:
                     result["evidence"].append("No match in variable star catalogs")
                     result["confidence"] = 0.3
@@ -313,9 +293,7 @@ class ClassificationEngine:
                     if days_since < 3:
                         result["type"] = "recent_outburst"
                         result["confidence"] = 0.5
-                        result["evidence"].append(
-                            "Extremely recent - could be SN or nova"
-                        )
+                        result["evidence"].append("Extremely recent - could be SN or nova")
 
         except Exception as e:
             logger.error(f"Error in temporal analysis: {e}")
@@ -334,24 +312,16 @@ class ClassificationEngine:
             # Check for multi-band data
             bands = []
             for key in transient_data.keys():
-                if (
-                    "mag_" in key
-                    or "_" in key
-                    and key.split("_")[-1] in ["u", "g", "r", "i", "z"]
-                ):
+                if "mag_" in key or "_" in key and key.split("_")[-1] in ["u", "g", "r", "i", "z"]:
                     bands.append(key)
 
             if len(bands) >= 2:
-                result["evidence"].append(
-                    f"Multi-band photometry available: {', '.join(bands)}"
-                )
+                result["evidence"].append(f"Multi-band photometry available: {', '.join(bands)}")
                 result["confidence"] = 0.4
 
                 # Simple color-based classification
                 if "mag_g" in transient_data and "mag_r" in transient_data:
-                    g_r = float(transient_data["mag_g"]) - float(
-                        transient_data["mag_r"]
-                    )
+                    g_r = float(transient_data["mag_g"]) - float(transient_data["mag_r"])
 
                     if g_r > 1.0:
                         result["evidence"].append(
@@ -409,25 +379,17 @@ class ClassificationEngine:
             statement_lower = statement.lower()
 
             if any(word in statement_lower for word in ["lrn", "red nova", "merger"]):
-                type_votes["luminous_red_nova"] = (
-                    type_votes.get("luminous_red_nova", 0) + 1
-                )
+                type_votes["luminous_red_nova"] = type_votes.get("luminous_red_nova", 0) + 1
 
             if any(
-                word in statement_lower
-                for word in ["supernova", "sn ", "ia", "ib", "ic", "ii"]
+                word in statement_lower for word in ["supernova", "sn ", "ia", "ib", "ic", "ii"]
             ):
                 type_votes["supernova"] = type_votes.get("supernova", 0) + 1
 
-            if any(
-                word in statement_lower
-                for word in ["variable", "cv", "nova", "outburst"]
-            ):
+            if any(word in statement_lower for word in ["variable", "cv", "nova", "outburst"]):
                 type_votes["variable_star"] = type_votes.get("variable_star", 0) + 1
 
-            if any(
-                word in statement_lower for word in ["extragalactic", "galaxy", "host"]
-            ):
+            if any(word in statement_lower for word in ["extragalactic", "galaxy", "host"]):
                 type_votes["extragalactic"] = type_votes.get("extragalactic", 0) + 1
 
             if any(word in statement_lower for word in ["galactic", "stellar"]):
@@ -447,9 +409,7 @@ class ClassificationEngine:
                 avg_confidence = sum(confidence_scores) / len(confidence_scores)
                 final_confidence = 0.6 * vote_confidence + 0.4 * avg_confidence
             else:
-                final_confidence = (
-                    vote_confidence * 0.7
-                )  # Scale down if no explicit scores
+                final_confidence = vote_confidence * 0.7  # Scale down if no explicit scores
 
             return {"type": best_type, "confidence": min(final_confidence, 1.0)}
 
@@ -510,19 +470,13 @@ class ClassificationEngine:
         classifications = []
 
         for _, transient in transients_df.iterrows():
-            result = self.classify_transient(
-                transient.get("id", "unknown"), transient.to_dict()
-            )
+            result = self.classify_transient(transient.get("id", "unknown"), transient.to_dict())
             classifications.append(result)
 
         # Add classification results to DataFrame
         transients_df["classification"] = [c["classification"] for c in classifications]
-        transients_df["classification_confidence"] = [
-            c["confidence"] for c in classifications
-        ]
-        transients_df["classification_evidence"] = [
-            c["evidence"] for c in classifications
-        ]
+        transients_df["classification_confidence"] = [c["confidence"] for c in classifications]
+        transients_df["classification_evidence"] = [c["evidence"] for c in classifications]
         transients_df["classification_recommendations"] = [
             c["recommendations"] for c in classifications
         ]

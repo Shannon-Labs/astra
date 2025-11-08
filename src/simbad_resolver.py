@@ -41,9 +41,7 @@ class SimbadResolver:
                         # Extract coordinates (RA and DEC are always returned)
                         ra = result["RA"][0]
                         dec = result["DEC"][0]
-                        obj_type = (
-                            result["OTYPE"][0] if "OTYPE" in result.keys() else None
-                        )
+                        obj_type = result["OTYPE"][0] if "OTYPE" in result.keys() else None
 
                         return {
                             "ra": ra,
@@ -173,11 +171,7 @@ if __name__ == "__main__":
             print("\n✓ Some transients were resolved!")
             resolved.to_csv("simbad_transients_resolved.csv", index=False)
         else:
-            print(
-                "\nℹ️  No recent transients in SIMBAD yet (expected for new discoveries)"
-            )
+            print("\nℹ️  No recent transients in SIMBAD yet (expected for new discoveries)")
 
     except FileNotFoundError:
-        print(
-            "\nℹ️  bright_transients.csv not found, skipping transient resolution test"
-        )
+        print("\nℹ️  bright_transients.csv not found, skipping transient resolution test")
