@@ -17,13 +17,8 @@ def scrape_bright_transient_survey():
 
     transients = []
 
-    # Try ATLAS forced photometry
-    try:
-        print("   Checking ATLAS...")
-        # ATLAS has a public page but it's not easily scrapeable
-        # This is a placeholder for future implementation
-    except:
-        pass
+    # Try ATLAS forced photometry (placeholder until API access is configured)
+    print("   Checking ATLAS (placeholder)...")
 
     # Try ZTF public data
     try:
@@ -38,13 +33,8 @@ def scrape_bright_transient_survey():
     except Exception as e:
         print(f"   ✗ ZTF error: {e}")
 
-    # Try AAVSO
-    try:
-        print("   Checking AAVSO recent observations...")
-        url = "https://www.aavso.org/apps/vsp/"
-        # AAVSO has API but requires key
-    except:
-        pass
+    # Try AAVSO (requires API key, so we simply note the source for now)
+    print("   Checking AAVSO recent observations (requires API key)...")
 
     return pd.DataFrame(transients)
 
@@ -106,10 +96,15 @@ def get_all_bright_transients():
                     # Only keep bright ones (mag < 17)
                     if name and mag and mag < 17.0:
                         all_data.append(
-                            {"id": name, "mag": mag, "type": obj_type, "source": "Rochester_Bright"}
+                            {
+                                "id": name,
+                                "mag": mag,
+                                "type": obj_type,
+                                "source": "Rochester_Bright",
+                            }
                         )
-                except:
-                    continue
+                except Exception as exc:
+                    print(f"   ✗ Error parsing Rochester bright row: {exc}")
 
     df = pd.DataFrame(all_data)
     if not df.empty:

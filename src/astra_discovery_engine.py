@@ -5,7 +5,7 @@ TNS-LESS Discovery Engine v1.1 (Fixed)
 """
 
 import re
-from datetime import datetime, timedelta
+from datetime import datetime
 
 import astropy.units as u
 import numpy as np
@@ -76,8 +76,8 @@ class AstraDiscoveryEngine:
                                     "source": f"Rochester_Table_{i}",
                                 }
                             )
-                    except Exception as e:
-                        continue
+                    except Exception as exc:
+                        print(f"   ✗ Failed to parse Rochester row: {exc}")
 
         # Also try to find individual transient entries in the page
         text = soup.get_text()
@@ -128,7 +128,8 @@ class AstraDiscoveryEngine:
         if not df.empty:
             # Remove duplicates, keeping the one with most info
             df = df.sort_values(
-                "source", key=lambda x: x.map({"Rochester_Entries": 1, "Rochester_Table_1": 0})
+                "source",
+                key=lambda x: x.map({"Rochester_Entries": 1, "Rochester_Table_1": 0}),
             )
             df = df.drop_duplicates("id", keep="first")
 
@@ -187,10 +188,16 @@ class AstraDiscoveryEngine:
                                     SkyCoord(star["ra"], star["dec"], unit=u.deg)
                                 ).arcsec
                             ),
-                            "pmra": float(star["pmra"]) if "pmra" in star.keys() else None,
-                            "pmdec": float(star["pmdec"]) if "pmdec" in star.keys() else None,
+                            "pmra": (
+                                float(star["pmra"]) if "pmra" in star.keys() else None
+                            ),
+                            "pmdec": (
+                                float(star["pmdec"]) if "pmdec" in star.keys() else None
+                            ),
                             "parallax": (
-                                float(star["parallax"]) if "parallax" in star.keys() else None
+                                float(star["parallax"])
+                                if "parallax" in star.keys()
+                                else None
                             ),
                             "g_mag": (
                                 float(star["phot_g_mean_mag"])
@@ -199,7 +206,9 @@ class AstraDiscoveryEngine:
                             ),
                         }
                     )
-                    print(f"   ✓ {row['id']}: Gaia match found (G={results[-1]['g_mag']:.1f})")
+                    print(
+                        f"   ✓ {row['id']}: Gaia match found (G={results[-1]['g_mag']:.1f})"
+                    )
                 else:
                     results.append({"id": row["id"], "gaia_match": False})
 
@@ -266,7 +275,11 @@ class AstraDiscoveryEngine:
                         "type": row["type"],
                         "score": score,
                         "reasons": reasons,
-                        **{k: v for k, v in row.items() if k not in ["id", "mag", "type"]},
+                        **{
+                            k: v
+                            for k, v in row.items()
+                            if k not in ["id", "mag", "type"]
+                        },
                     }
                 )
 
@@ -285,7 +298,9 @@ class AstraDiscoveryEngine:
         """Generate formatted discovery report"""
         report = []
         report.append("=" * 80)
-        report.append("ASTRA DISCOVERY REPORT - " + datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+        report.append(
+            "ASTRA DISCOVERY REPORT - " + datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        )
         report.append("=" * 80)
         report.append("")
 
@@ -312,9 +327,15 @@ class AstraDiscoveryEngine:
 
             if "gaia_match" in obj:
                 if obj["gaia_match"]:
-                    report.append(f"   Gaia: Match found (G={obj.get('g_mag', 'N/A'):.1f})")
+                    report.append(
+                        f"   Gaia: Match found (G={obj.get('g_mag', 'N/A'):.1f})"
+                    )
                     if pd.notna(obj.get("parallax")):
-                        dist = 1.0 / obj["parallax"] * 1000 if obj["parallax"] > 0 else None
+                        dist = (
+                            1.0 / obj["parallax"] * 1000
+                            if obj["parallax"] > 0
+                            else None
+                        )
                         if dist:
                             report.append(f"   Distance: ~{dist:.0f} pc")
                 else:

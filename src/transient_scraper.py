@@ -5,7 +5,6 @@ Data collection from public transient sources
 """
 
 import re
-from datetime import datetime, timedelta
 
 import pandas as pd
 import requests
@@ -78,8 +77,8 @@ def scrape_rochester_sn_page():
                                 "source": f"Rochester_Table_{i}",
                             }
                         )
-                except Exception as e:
-                    continue
+                except Exception as exc:
+                    print(f"   ✗ Failed to parse Rochester transient row: {exc}")
 
     # Also try to find individual transient entries in the page
     text = soup.get_text()
@@ -127,7 +126,8 @@ def scrape_rochester_sn_page():
     if not df.empty:
         # Remove duplicates, keeping the one with most info
         df = df.sort_values(
-            "source", key=lambda x: x.map({"Rochester_Entries": 1, "Rochester_Table_1": 0})
+            "source",
+            key=lambda x: x.map({"Rochester_Entries": 1, "Rochester_Table_1": 0}),
         )
         df = df.drop_duplicates("id", keep="first")
 

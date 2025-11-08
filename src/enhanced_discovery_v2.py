@@ -19,9 +19,9 @@ try:
     from astroquery.simbad import Simbad
 
     ASTROPY_AVAILABLE = True
-except:
+except Exception as exc:
     ASTROPY_AVAILABLE = False
-    print("⚠️  Astroquery not available, using basic mode")
+    print(f"⚠️  Astroquery not available, using basic mode ({exc})")
 
 
 class EnhancedDiscoveryEngineV2:
@@ -85,8 +85,8 @@ class EnhancedDiscoveryEngineV2:
                                     "source": f"Rochester_Table_{i}",
                                 }
                             )
-                    except Exception:
-                        continue
+                    except Exception as exc:
+                        print(f"   ✗ Failed to parse enhanced row: {exc}")
 
         # Also try to find individual transient entries in the page
         text = soup.get_text()
@@ -137,7 +137,8 @@ class EnhancedDiscoveryEngineV2:
         if not df.empty:
             # Remove duplicates, keeping the one with most info
             df = df.sort_values(
-                "source", key=lambda x: x.map({"Rochester_Entries": 1, "Rochester_Table_1": 0})
+                "source",
+                key=lambda x: x.map({"Rochester_Entries": 1, "Rochester_Table_1": 0}),
             )
             df = df.drop_duplicates("id", keep="first")
 
@@ -314,10 +315,10 @@ class EnhancedDiscoveryEngineV2:
 
         report.append("")
         report.append("Key opportunities:")
-        report.append("- Unknown types: Need spectroscopic classification")
-        report.append("- Bright objects: Accessible to small telescopes")
-        report.append("- LRN candidates: Rare stellar merger events")
-        report.append("- Unusual types: Potential new phenomena")
+        report.append("• Unknown types: Need spectroscopic classification")
+        report.append("• Bright objects: Accessible to small telescopes")
+        report.append("• LRN candidates: Rare stellar merger events")
+        report.append("• Unusual types: Potential new phenomena")
 
         return "\n".join(report)
 

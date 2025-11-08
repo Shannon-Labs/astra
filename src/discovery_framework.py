@@ -166,7 +166,9 @@ class AstraDiscoveryEngine:
             report.append("--- BRIGHTNESS DISTRIBUTION ANALYSIS ---")
             report.append(f"Mean magnitude: {stats['mean_magnitude']:.2f}")
             report.append(f"Standard deviation: {stats['std_magnitude']:.2f}")
-            report.append(f"Range: {stats['min_magnitude']:.1f} - {stats['max_magnitude']:.1f}")
+            report.append(
+                f"Range: {stats['min_magnitude']:.1f} - {stats['max_magnitude']:.1f}"
+            )
             report.append(f"Bright outliers (>2.5σ): {len(stats['bright_outliers'])}")
             report.append("")
 
@@ -186,9 +188,13 @@ class AstraDiscoveryEngine:
             # Distance estimate
             dist = self.calculate_distance_estimate(obj["mag"], obj["type"])
             if dist["distance_mpc"] < 1:
-                report.append(f"   Distance: ~{dist['distance_kpc']:.1f} kpc ({dist['method']})")
+                report.append(
+                    f"   Distance: ~{dist['distance_kpc']:.1f} kpc ({dist['method']})"
+                )
             else:
-                report.append(f"   Distance: ~{dist['distance_mpc']:.2f} Mpc ({dist['method']})")
+                report.append(
+                    f"   Distance: ~{dist['distance_mpc']:.2f} Mpc ({dist['method']})"
+                )
 
             report.append(f"   Anomaly Score: {obj['anomaly_score']:.1f}/10.0")
             report.append("")
@@ -201,10 +207,18 @@ class AstraDiscoveryEngine:
 
         report.append("HYPOTHESIS 1: CV Outburst Unusualness")
         report.append("-" * 40)
-        report.append("Prediction: AT2025aaxb and AT2025aavs are NOT ordinary dwarf novae.")
-        report.append("Test 1: Their absolute magnitudes (M~7.5) imply distances <500 pc.")
-        report.append("Test 2: If within 500 pc, they should have high proper motion in Gaia DR3.")
-        report.append("Test 3: Light curve should show rapid decline (<5 days) if nova-like.")
+        report.append(
+            "Prediction: AT2025aaxb and AT2025aavs are NOT ordinary dwarf novae."
+        )
+        report.append(
+            "Test 1: Their absolute magnitudes (M~7.5) imply distances <500 pc."
+        )
+        report.append(
+            "Test 2: If within 500 pc, they should have high proper motion in Gaia DR3."
+        )
+        report.append(
+            "Test 3: Light curve should show rapid decline (<5 days) if nova-like."
+        )
         report.append("Expected: At least one shows unusual spectroscopic features.")
         report.append("Priority: HIGH - Bright, accessible to amateur spectroscopy.")
         report.append("")
@@ -214,8 +228,12 @@ class AstraDiscoveryEngine:
         report.append("Prediction: AT2025aayo is a Type Ia SN at z>0.5.")
         report.append("Test 1: Host galaxy is 'anonymous' (faint, high-z).")
         report.append("Test 2: Magnitude 20.4 implies distance >1000 Mpc if SN.")
-        report.append("Test 3: Should show SN features in r/i bands with 2-week rise time.")
-        report.append("Expected: Redshift >0.3 based on host galaxy absence in catalogs.")
+        report.append(
+            "Test 3: Should show SN features in r/i bands with 2-week rise time."
+        )
+        report.append(
+            "Expected: Redshift >0.3 based on host galaxy absence in catalogs."
+        )
         report.append("Priority: MEDIUM - Requires 8m-class spectroscopy.")
         report.append("")
 
